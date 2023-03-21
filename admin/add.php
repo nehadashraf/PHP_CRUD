@@ -1,25 +1,30 @@
 <?php
-//connection
 include '../app/config.php';
 include '../app/functions.php';
-//UI
-include '../public/nav.php';
 include '../public/head.php';
+include '../public/nav.php';
 $errors = [];
+$roles = "SELECT * FROM `roles`";
+$roleData = mysqli_query($connect, $roles);
+$row = mysqli_fetch_assoc($roleData);
 if (isset($_POST['send'])) {
     $name = filterString($_POST['name']);
-    if (empty($name)) {
+    $password = sha1($_POST['password']);
+    $role = $_POST['role'];
+    if (stringValidation($name)) {
         $errors[] = "Please Enter Valid Name ";
     }
+    if (passwordValidation($password)) {
+        $errors[] = "Please Enter Valid Password";
+    }
     if (empty($errors)) {
-        $insert = "INSERT INTO `department` values(NULL,'$name',Default)";
+        $insert = "INSERT INTO `admin` VALUES(NULL,'$name','$password',$role,'fake.jpg')";
         $insertion = mysqli_query($connect, $insert);
-        testMessage($insertion, "Insertion");
     }
 }
-auth(2, 3);
-?>
+auth();
 
+?>
 <h1 class="text-center text-info display-1 mt-5 pt-5">Add department Page</h1>
 <div class="container col-6">
     <?php if (!empty($errors)) : ?>
@@ -38,11 +43,23 @@ auth(2, 3);
                     <label for="">Name</label>
                     <input type="text" name="name" class="form-control">
                 </div>
+                <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="password" name="password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Role</label>
+                    <select name="role" id="" class="form-control">
+                        <?php foreach ($roleData as $data) : ?>
+                            <option value=<?= $data['id'] ?>><?= $data['description'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <button class="btn btn-info m-3" name="send">send</button>
             </form>
         </div>
     </div>
 </div>
 <?php
-include '../public/script.php'
+include '../public/script.php';
 ?>

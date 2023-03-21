@@ -6,21 +6,31 @@ include '../app/functions.php';
 include '../public/nav.php';
 include '../public/head.php';
 $errors = [];
+$name = NULL;
+$adminId = $_SESSION['admin']['id'];
+$select = "SELECT * FROM `admin` WHERE `id`=$adminId";
+$selection = mysqli_query($connect, $select);
+$row = mysqli_fetch_assoc($selection);
+
 if (isset($_POST['send'])) {
     $name = filterString($_POST['name']);
-    if (empty($name)) {
+    $password = sha1($_POST['password']);
+    if (stringValidation($name)) {
         $errors[] = "Please Enter Valid Name ";
     }
+    if (passwordValidation($password)) {
+        $errors[] = "Please Enter valid password";
+    }
     if (empty($errors)) {
-        $insert = "INSERT INTO `department` values(NULL,'$name',Default)";
+        $insert = "UPDATE `admin` SET  name='$name', password='$password' where id=$adminId";
         $insertion = mysqli_query($connect, $insert);
-        testMessage($insertion, "Insertion");
+        path('admin/profile.php');
     }
 }
+
 auth(2, 3);
 ?>
-
-<h1 class="text-center text-info display-1 mt-5 pt-5">Add department Page</h1>
+<h1 class="text-center text-info display-1 mt-5 pt-5">Edit Profile</h1>
 <div class="container col-6">
     <?php if (!empty($errors)) : ?>
         <div class="alert alert-danger">
@@ -36,13 +46,18 @@ auth(2, 3);
             <form action="" method="POST" class="m-3">
                 <div class="form-group">
                     <label for="">Name</label>
-                    <input type="text" name="name" class="form-control">
+                    <input type="text" value="<?= $row['name'] ?>" name="name" class="form-control">
                 </div>
-                <button class="btn btn-info m-3" name="send">send</button>
+                <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="text" value="" name="password" class="form-control">
+                </div>
+                <button class="btn btn-info m-3" name="send">update</button>
             </form>
         </div>
     </div>
 </div>
+
 <?php
 include '../public/script.php'
 ?>

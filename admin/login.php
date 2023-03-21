@@ -1,4 +1,4 @@
-<?php 
+<?php
 //connection
 include '../app/config.php';
 include '../app/functions.php';
@@ -6,22 +6,29 @@ include '../app/functions.php';
 include '../public/nav.php';
 include '../public/head.php';
 //section
-if(isset($_POST['login'])){
-    $name=$_POST['name'];
-    $password=$_POST['password'];
-    $select="SELECT * FROM `admin` WHERE `name`='$name' and `password`='$password'";
-    $s=mysqli_query($connect,$select);
-    $numOfRows=mysqli_num_rows($s);
-    if($numOfRows==1){
+
+if (isset($_POST['login'])) {
+    $name = $_POST['name'];
+    $password = sha1($_POST['password']);
+    $select = "SELECT * FROM `admin` WHERE `name`='$name' and `password`='$password'";
+    $s = mysqli_query($connect, $select);
+    $numOfRows = mysqli_num_rows($s);
+    $row = mysqli_fetch_assoc($s);
+    if ($numOfRows == 1) {
         path("/");
-        $_SESSION['admin']=$name;
-    }
-    else{
-        echo"
+        $_SESSION['admin'] = [
+            "name" => $row['name'],
+            "role" => $row['role'],
+            "id" => $row['id'],
+        ];
+    } else {
+        echo "
         <div class='text-center alert alert-danger col-5 mx-auto'>Please Try Again</div>
         ";
     }
 }
+
+
 ?>
 
 <h1 class="text-center text-info display-1 mt-5 pt-5">Login Page</h1>
@@ -42,6 +49,6 @@ if(isset($_POST['login'])){
         </div>
     </div>
 </div>
-<?php 
+<?php
 include '../public/script.php'
 ?>

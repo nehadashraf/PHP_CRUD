@@ -22,3 +22,12 @@ body{
 .dropdown-menu{
 min-width: 20px ;
 }
+.model{
+    
+}
+.model-content{
+    background-color: black;
+}
+.model-body{
+    background-color: #6666;
+}
